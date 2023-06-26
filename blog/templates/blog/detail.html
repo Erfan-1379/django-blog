@@ -1,0 +1,36 @@
+{% extends 'parent/base.html' %}
+{% load jformat %}
+{% load blog_tags %}
+{% block title %}post detail{% endblock %}
+
+{% block content %}
+
+    <h1>post detail</h1>
+    <h2> {{ post.title }} (by {{ post.auther }}) </h2>
+    <p> {{ post.description | markdown }} </p>
+    <hr>
+    <p> {{ post.publish | jformat:"%Y/%m/%d - %H:%M:%S" }} </p>
+    <hr>
+{#----------------------comments------------------------#}
+    <div>
+    {% with comments.count as cm_count %}
+    {{ cm_count }} comment{{ cm_count|pluralize }}
+        <hr>
+    </div>
+
+    <div>
+    {% for cm in comments %}
+        {{ cm.body|linebreaks }}
+        {{ cm.name }}
+        <hr>
+    {% empty %}
+        کامنتی وجود ندارد!
+    {% endfor %}
+    </div>
+    {% endwith %}
+    <form method="post" action="{% url 'blog:post_comment' post.id %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="افزودن کامنت">
+    </form>
+{% endblock %}
