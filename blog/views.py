@@ -88,7 +88,7 @@ def post_comment(request, post_id):
 
 
 @api_view(["GET"])
-def list_auther(request):
+def list_information(request):
     posts = Post.published.all()
     post_data = serializers.serialize('json', posts)
     post_data_json = json.loads(post_data)
