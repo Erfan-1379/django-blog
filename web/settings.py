@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'blog.apps.BlogConfig',
-    'django_jalali'
+    'django_jalali',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [
@@ -87,7 +88,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'blog',
         'USER': 'blog_admin',
-        'PASSWORD': 'erfan1379',
+        'PASSWORD': '*****',
         'PORT': '5432',
     }
 }

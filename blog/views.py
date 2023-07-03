@@ -5,6 +5,10 @@ from .forms import *
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.generic import ListView, DetailView
 from django.views.decorators.http import require_POST
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+import json
+from django.core import serializers
 
 
 # Create your views here.
@@ -81,3 +85,14 @@ def post_comment(request, post_id):
         'comment': comment,
     }
     return render(request, "forms/comment.html", context)
+
+
+@api_view(["GET"])
+def list_auther(request):
+    posts = Post.published.all()
+    post_data = serializers.serialize('json', posts)
+    post_data_json = json.loads(post_data)
+    context = {
+        'post': post_data_json
+    }
+    return Response(context)
