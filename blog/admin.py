@@ -8,6 +8,18 @@ import django_jalali.admin as jadmin
 
 # admin.sites.AdminSite
 
+# Inlines
+
+
+class ImageInline(admin.TabularInline):
+    model = Image
+    extra = 0
+
+
+class CommentInline(admin.TabularInline):
+    model = Comment
+    extra = 0
+
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
@@ -20,6 +32,7 @@ class PostAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ['title']}
     list_editable = ['status']
     # list_display_links = ['auther']
+    inlines = [ImageInline, CommentInline]
 
 
 @admin.register(Ticket)
@@ -33,3 +46,8 @@ class CommentAdmin(admin.ModelAdmin):
     list_filter = ['active', ('created', JDateFieldListFilter), ('update', JDateFieldListFilter)]
     search_fields = ['name', 'body']
     list_editable = ['active']
+
+
+@admin.register(Image)
+class ImageAdmin(admin.ModelAdmin):
+    list_display = ['post', 'title', 'created']

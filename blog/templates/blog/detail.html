@@ -11,6 +11,12 @@
     <hr>
     <p> {{ post.publish | jformat:"%Y/%m/%d - %H:%M:%S" }} </p>
     <hr>
+    <dev>
+    {% for img in post.images.all %}
+        <img width="350px" height="200px" src="{{ img.image_file.url }}" alt="{{ img.title }}">
+    {% endfor %}
+    </dev>
+    <hr>
 {#----------------------comments------------------------#}
     <div>
     {% with comments.count as cm_count %}

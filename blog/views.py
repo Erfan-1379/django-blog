@@ -9,6 +9,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 import json
 from django.core import serializers
+from django.db.models import Q
+from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank, TrigramSimilarity
 
 
 # Create your views here.
@@ -105,9 +107,19 @@ def post_search(request):
         form = SearchForm(data=request.GET)
         if form.is_valid():
             query = form.cleaned_data['query']
-            results = Post.published.filter(description__contains=query)
+            results1 = Post.published.annotate(similarity=TrigramSimilarity('title', query))\
+                .filter(similarity__gt=0.1)
+            results2 = Post.published.annotate(similarity=TrigramSimilarity('description', query))\
+                .filter(similarity__gt=0.1)
+            results = (results1 | results2).order_by('-similarity')
     context = {
         'query': query,
         'results': results
     }
     return render(request, 'blog/search.html', context)
+
+
+def profile(request):
+    user = request.user
+    posts = Post.published.filter(auther=user)
+    return render(request, 'blog/profile.html', {'posts': posts})
