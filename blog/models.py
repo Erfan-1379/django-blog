@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django_jalali.db import models as jmodels
 from django.urls import reverse
 from django_resized import ResizedImageField
+from django.template.defaultfilters import slugify
 
 
 # Manager
@@ -49,6 +50,17 @@ class Post(models.Model):
     def get_absolute_url(self):
         return reverse('blog:post_detail', args=[self.id])
 
+    def save(self, *arg, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        super(). save(*arg, *kwargs)
+
+    def delete(self, *arg, **kwargs):
+        for img in self.images.all():
+            storage, path = img.image_file.storage, img.image_file.path
+            storage.delete(path)
+        super().delete(*arg, *kwargs)
+
 
 class Ticket(models.Model):
     message = models.TextField(verbose_name="پیام")
@@ -92,7 +104,6 @@ class Image(models.Model):
     description = models.TextField(verbose_name= "توضیحات", null=True, blank=True)
     created = jmodels.jDateTimeField(auto_now_add=True)  # date now
 
-
     class Meta:
         ordering = ['created']
         indexes = [
@@ -100,5 +111,11 @@ class Image(models.Model):
         ]
         verbose_name = "تصویر"
         verbose_name_plural = "تصویر ها"
+
+    def delete(self, *arg, **kwargs):
+        storage, path = self.image_file.storage, self.image_file.path
+        storage.delete(path)
+        super().delete(*arg, *kwargs)
+
     def __str__(self):
         return self.title if self.title else "None"
